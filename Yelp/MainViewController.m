@@ -8,15 +8,19 @@
 
 #import "MainViewController.h"
 #import "YelpClient.h"
+#import "Business.h"
+#import "YelpTableViewCell.h"
 
 NSString * const kYelpConsumerKey = @"vxKwwcR_NMQ7WaEiQBK_CA";
 NSString * const kYelpConsumerSecret = @"33QCvh5bIF5jIHR5klQr7RtBDhQ";
 NSString * const kYelpToken = @"uRcRswHFYa1VkDrGV6LAW2F8clGh5JHV";
 NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
-@interface MainViewController ()
+@interface MainViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) YelpClient *client;
+@property (nonatomic, strong) NSArray *businesses;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end
 
@@ -31,6 +35,9 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
         
         [self.client searchWithTerm:@"Thai" success:^(AFHTTPRequestOperation *operation, id response) {
             NSLog(@"response: %@", response);
+            NSArray *businessDictionaries = response[@"businesses"];
+            self.businesses = [Business businessWithDictionaris:businessDictionaries];
+            [self.tableView reloadData];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"error: %@", [error description]);
         }];
@@ -42,6 +49,10 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    [self.tableView registerNib:[UINib nibWithNibName:@"YelpTableViewCell" bundle:nil] forCellReuseIdentifier:@"YelpTableViewCell"];
+    self.tableView.rowHeight = 102;//UITableViewAutomaticDimension;
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,5 +60,14 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    YelpTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"YelpTableViewCell"];
+    cell.business = self.businesses[indexPath.row];
+    return cell;
+}
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.businesses.count;
+}
 @end
