@@ -21,10 +21,18 @@
         float milesPerMeter = 0.000621317;
         self.distance = [dictionary[@"distance"] integerValue] * milesPerMeter;
         
+        NSDictionary *location = [dictionary valueForKey:@"location"];
+        NSString *street = @"";
+        if ([location valueForKey:@"address"]) {
+            street = [location valueForKey:@"address"][0];
+        }
+//        NSString *street = [[location ? [[location valueForKey:@"address"] ? [location valueForKey:@"address"][0] : @""] : @""] ];
         
-        NSString *street = [[dictionary valueForKey:@"location"] valueForKey:@"address"][0];
-        NSString *neighborhoods = [[dictionary valueForKey:@"location"] valueForKey:@"neighborhoods"][0];
-        self.address = [NSString stringWithFormat:@"%@,%@", street, neighborhoods];
+        NSString *city = @"";//[location ? [[location valueForKey:@"city"] ? [location valueForKey:@"city"] : @"" ]: @""];
+        if ([location valueForKey:@"city"]) {
+            city = [location valueForKey:@"city"];
+        }
+        self.address = [NSString stringWithFormat:@"%@,%@", street, city];
         
         NSArray *categories = dictionary[@"categories"];
         NSMutableArray *categoryNames = [NSMutableArray array];

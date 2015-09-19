@@ -55,6 +55,19 @@
     // Pass the selected object to the new view controller.
 }
 */
+-(NSDictionary*)filters {
+    NSMutableDictionary *filters = [NSMutableDictionary dictionary];
+    
+    if (self.selectedCategories.count > 0) {
+        NSMutableArray *names = [NSMutableArray array];
+        for (NSDictionary *dictionary in self.selectedCategories) {
+            [names addObject:dictionary[@"code"]];
+        }
+        NSString *catergoryFilter = [names componentsJoinedByString:@","];
+        [filters setObject:catergoryFilter forKey:@"category_filter"];
+    }
+    return filters;
+}
 
 -(void) onCancelButton
 {
@@ -81,10 +94,10 @@
 -(void)initCategories
 {
     self.categories =
-    @[@{@"name":@"Afghan", @"code":@"afghan"},
+    @[@{@"name":@"Afghan", @"code":@"afghani"},
       @{@"name":@"African", @"code":@"african"},
       @{@"name":@"Indian", @"code":@"indian"},
-      @{@"name":@"American", @"code":@"american"}
+      @{@"name":@"American", @"code":@"newamerican"}
       ];
 }
 
